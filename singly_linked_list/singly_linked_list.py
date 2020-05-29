@@ -66,3 +66,41 @@ class LinkedList:
             end = end.next.next
             middle = middle.next
         return middle
+
+    def iterate_nodes(self):
+        node_values = []
+        current_node = self.head
+        while current_node is not None:
+            node_values.append(current_node.value)
+            current_node = current_node.next
+        print(f'The nodes are in the following order: {node_values}')
+
+    def reverse(self):
+        """ capture current head as starting point for iteration and
+        assign placeholders for the current and previous values """
+        iterator = self.head
+        current_node = self.head
+        previous_node = None
+
+        """ switch head and tail pointers"""
+        self.head = self.tail
+        self.tail = current_node
+
+        """ push all of the values forward while making the pointer
+        switch direction """
+        while iterator is not None:
+            iterator = iterator.next
+            current_node.next = previous_node
+            previous_node = current_node
+            current_node = iterator
+
+
+# testing reverse()
+# myList = LinkedList()
+# myList.add_to_tail(0)
+# myList.add_to_tail(1)
+# myList.add_to_tail(2)
+# myList.add_to_tail(3)
+# myList.iterate_nodes()
+# myList.reverse()
+# myList.iterate_nodes()
