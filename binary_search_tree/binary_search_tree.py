@@ -8,6 +8,8 @@ class BSTNode:
         self.left = None
         self.right = None
 
+    # Part 1 -----------------------
+
     def insert(self, value):
         if value < self.value:
             if self.left is None:
@@ -34,11 +36,17 @@ class BSTNode:
             else:
                 return self.right.contains(target)
 
-    def get_max(self):
-        if self.right is not None:
-            return self.right.get_max()
+    def get_max(self, node=None):
+        if node is not None:
+            if node.right is not None:
+                return node.right.get_max()
+            else:
+                return node.value
         else:
-            return self.value
+            if self.right is not None:
+                return self.right.get_max()
+            else:
+                return self.value
 
     def for_each(self, fn):
         fn(self.value)
@@ -49,12 +57,12 @@ class BSTNode:
 
     # Part 2 -----------------------
 
-    def in_order_print(self, node):
+    def in_order_dft(self, node):
         if node.left is not None:
-            node.left.in_order_print(node.left)
+            node.left.in_order_dft(node.left)
         print(node.value)
         if node.right is not None:
-            node.right.in_order_print(node.right)
+            node.right.in_order_dft(node.right)
 
     def bft_print(self, node):
         bft_queue = Queue()
@@ -93,3 +101,170 @@ class BSTNode:
         if node.right is not None:
             node.right.post_order_dft(node.right)
         print(node.value)
+
+    """
+    delete() will remove the given target from the tree if it exists. If there
+    are duplicate values within the tree, it will delete the deepest value.
+    """
+
+    def delete(self, target):
+        target_node = self.get_node(target)
+        parent_node = self.get_parent_node(target_node)
+
+        # two children
+        if (target_node.left is not None) and (target_node.right is not None):
+            # find min value of branch to replace target and store copy of node
+            branch_min_value = self.get_min(self.right)
+            branch_min_node = self.get_node(branch_min_value)
+            # delete min node from current location
+            self.delete(branch_min_value)
+            # check if target is child or root
+            if parent_node is not None:
+                # make min node point to target's children
+                branch_min_node.left = target_node.left
+                branch_min_node.right = target_node.right
+                # make target's parent point to min node
+                if parent_node.right == target_node:
+                    parent_node.right = branch_min_node
+                else:
+                    parent_node.left = branch_min_node
+            # cannot replace root node so transfer value from min node
+            else:
+                target_node.value = branch_min_value
+
+        # one child - left
+        elif target_node.left is not None:
+            if parent_node is not None:
+                if parent_node.right == target_node:
+                    parent_node.right = target_node.left
+                else:
+                    parent_node.left = target_node.left
+            else:
+                target_node = target_node.left
+
+        # one child - right
+        elif target_node.right is not None:
+            if parent_node is not None:
+                if parent_node.right == target_node:
+                    parent_node.right = target_node.right
+                else:
+                    parent_node.left = target_node.right
+            else:
+                target_node = target_node.right
+
+        # no children
+        else:
+            try:
+                if parent_node.right == target_node:
+                    parent_node.right = None
+                else:
+                    parent_node.left = None
+            except:
+                print(
+                    'Cannot delete root node if there are no children to replace it with.')
+
+    # Self Made Stretch Goals -------------------------
+
+    def get_min(self, node=None):
+        if node is not None:
+            if node.left is not None:
+                return node.left.get_min()
+            else:
+                return node.value
+        else:
+            if self.left is not None:
+                return self.left.get_min()
+            else:
+                return self.value
+
+    '''
+    get_node() will retrieve the node with a value matching the target.
+    If there are duplicate values in the tree, always return the deepest
+    matching node.
+    '''
+
+    def get_node(self, target):
+        if self.value == target:
+            if self.right and self.right.contains(target):
+                return self.right.get_node(target)
+            else:
+                return self
+        elif target < self.value:
+            if self.left is None:
+                return None
+            else:
+                return self.left.get_node(target)
+        elif self.value < target:
+            if self.right is None:
+                return None
+            else:
+                return self.right.get_node(target)
+
+    '''
+    get_parent_node() retrieves the parent node of the given target node.
+    The actual node is used to account for potential duplicate node values.
+    returns the a tuple containing the parent node and a boolean that
+    represents (parent <= child)
+    '''
+
+    def get_parent_node(self, target_node):
+        if self == target_node:
+            return None
+        elif target_node.value < self.value:
+            if self.left is None:
+                return None
+            elif self.left == target_node:
+                return self
+            else:
+                return self.left.get_parent_node(target_node)
+        elif self.value <= target_node.value:
+            if self.right is None:
+                return None
+            elif self.right == target_node:
+                return self
+            else:
+                return self.right.get_parent_node(target_node)
+
+    def delete_all(self, target):
+        while self.contains(target):
+            self.delete(target)
+
+
+"""
+This code is necessary for testing the `print` methods
+"""
+# bst = BSTNode(8)
+# bst.insert(3)
+# bst.insert(8)
+# bst.insert(10)
+# bst.insert(1)
+# bst.insert(6)
+# bst.insert(9)
+# bst.insert(14)
+# bst.insert(8)
+# bst.insert(4)
+# bst.insert(7)
+# bst.insert(13)
+# bst.insert(6)
+# bst.insert(13)
+# bst.insert(11)
+# bst.insert(12)
+# bst.insert(8)
+
+# bst.bft_print(bst)
+# bst.dft_print(bst)
+
+# print("elegant methods")
+# print("pre order")
+# bst.pre_order_dft(bst)
+# print("in order")
+# bst.in_order_dft(bst)
+# print("post order")
+# bst.post_order_dft(bst)
+
+# bst.delete(10)
+# bst.bft_print(bst)
+# print("===========================")
+# bst.delete_all(8)
+# bst.bft_print(bst)
+# print("===========================")
