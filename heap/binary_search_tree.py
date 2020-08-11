@@ -1,14 +1,8 @@
-from queue import Queue
-from stack import Stack
-
-
 class BSTNode:
     def __init__(self, value):
         self.value = value
         self.left = None
         self.right = None
-
-    # Part 1 -----------------------
 
     def insert(self, value):
         if value < self.value:
@@ -55,38 +49,12 @@ class BSTNode:
         if self.right is not None:
             self.right.for_each(fn)
 
-    # Part 2 -----------------------
-
     def in_order_dft(self, node):
         if node.left is not None:
             node.left.in_order_dft(node.left)
         print(node.value)
         if node.right is not None:
             node.right.in_order_dft(node.right)
-
-    def bft_print(self, node):
-        bft_queue = Queue()
-        current_node = node
-        while current_node is not None:
-            if current_node.left is not None:
-                bft_queue.enqueue(current_node.left)
-            if current_node.right is not None:
-                bft_queue.enqueue(current_node.right)
-            print(current_node.value)
-            current_node = bft_queue.dequeue()
-
-    def dft_print(self, node):
-        dft_stack = Stack()
-        current_node = node
-        while current_node is not None:
-            if current_node.left is not None:
-                dft_stack.push(current_node.left)
-            if current_node.right is not None:
-                dft_stack.push(current_node.right)
-            print(current_node.value)
-            current_node = dft_stack.pop()
-
-    # Stretch Goals -------------------------
 
     def pre_order_dft(self, node):
         print(node.value)
@@ -163,7 +131,9 @@ class BSTNode:
                 print(
                     'Cannot delete root node if there are no children to replace it with.')
 
-    # Self Made Stretch Goals -------------------------
+    def delete_all(self, target):
+        while self.contains(target):
+            self.delete(target)
 
     def get_min(self, node=None):
         if node is not None:
@@ -224,47 +194,3 @@ class BSTNode:
                 return self
             else:
                 return self.right.get_parent_node(target_node)
-
-    def delete_all(self, target):
-        while self.contains(target):
-            self.delete(target)
-
-
-"""
-This code is necessary for testing the `print` methods
-"""
-# bst = BSTNode(8)
-# bst.insert(3)
-# bst.insert(8)
-# bst.insert(10)
-# bst.insert(1)
-# bst.insert(6)
-# bst.insert(9)
-# bst.insert(14)
-# bst.insert(8)
-# bst.insert(4)
-# bst.insert(7)
-# bst.insert(13)
-# bst.insert(6)
-# bst.insert(13)
-# bst.insert(11)
-# bst.insert(12)
-# bst.insert(8)
-
-# bst.bft_print(bst)
-# bst.dft_print(bst)
-
-# print("elegant methods")
-# print("pre order")
-# bst.pre_order_dft(bst)
-# print("in order")
-# bst.in_order_dft(bst)
-# print("post order")
-# bst.post_order_dft(bst)
-
-# bst.delete(10)
-# bst.bft_print(bst)
-# print("===========================")
-# bst.delete_all(8)
-# bst.bft_print(bst)
-# print("===========================")
